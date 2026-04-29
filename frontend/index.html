@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DormMate – Group Chat</title>
+
+  <!-- Bootstrap 5 CSS CDN -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <!-- Bootstrap Icons -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    rel="stylesheet"
+  />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ── Root Variables ───────────────────────────── */
+    :root {
+      --navy:   #0d1b2a;
+      --dark:   #1a2a3a;
+      --mid:    #1e3a5f;
+      --blue:   #1565c0;
+      --accent: #1976d2;
+      --bright: #2196f3;
+      --pill:   #1e88e5;
+      --sidebar-w: 260px;
+      --topbar-h:  64px;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f0f4f8;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ── TOP NAV ──────────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,.4);
+    }
+    .topbar .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+      min-width: var(--sidebar-w);
+    }
+    .topbar nav a {
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: 0 14px;
+      transition: color .2s;
+    }
+    .topbar nav a.active,
+    .topbar nav a:hover { color: #fff; }
+    .topbar nav a.active { border-bottom: 2px solid var(--bright); padding-bottom: 2px; }
+    .topbar-icons { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+    .topbar-icons i { font-size: 1.2rem; color: rgba(255,255,255,.7); cursor: pointer; }
+    .topbar-icons i:hover { color: #fff; }
+    .avatar-sm {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: .85rem; cursor: pointer;
+    }
+
+    /* ── LAYOUT ───────────────────────────────────── */
+    .app-body {
+      display: flex;
+      height: 100vh;
+      padding-top: var(--topbar-h);
+    }
+
+    /* ── SIDEBAR ──────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--dark);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .sidebar-header {
+      padding: 16px 16px 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .sidebar-label {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,.4);
+    }
+    .search-wrap {
+      padding: 0 12px 12px;
+    }
+    .search-box {
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 10px;
+      padding: 8px 14px;
+      display: flex; align-items: center; gap: 8px;
+      color: rgba(255,255,255,.5);
+      font-size: .82rem;
+    }
+    .search-box input {
+      background: transparent;
+      border: none; outline: none;
+      color: #fff; width: 100%;
+      font-family: inherit; font-size: .82rem;
+    }
+    .search-box input::placeholder { color: rgba(255,255,255,.4); }
+
+    /* Conversation list */
+    .conv-list { overflow-y: auto; flex: 1; }
+    .conv-list::-webkit-scrollbar { width: 4px; }
+    .conv-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 4px; }
+
+    .conv-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: background .15s;
+      border-left: 3px solid transparent;
+    }
+    .conv-item:hover { background: rgba(255,255,255,.05); }
+    .conv-item.active {
+      background: rgba(33,150,243,.12);
+      border-left-color: var(--bright);
+    }
+    .conv-avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--mid);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .75rem; font-weight: 600; flex-shrink: 0;
+      position: relative;
+    }
+    .conv-avatar .dot {
+      width: 9px; height: 9px;
+      background: #4caf50; border-radius: 50%;
+      border: 2px solid var(--dark);
+      position: absolute; bottom: 1px; right: 1px;
+    }
+    .conv-info { flex: 1; min-width: 0; }
+    .conv-name { font-size: .82rem; font-weight: 600; color: #fff; }
+    .conv-preview {
+      font-size: .73rem; color: rgba(255,255,255,.45);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .conv-meta { text-align: right; flex-shrink: 0; }
+    .conv-time { font-size: .68rem; color: rgba(255,255,255,.35); }
+    .badge-count {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--bright);
+      color: #fff; font-size: .62rem; font-weight: 700;
+      border-radius: 50%; width: 18px; height: 18px;
+      margin-top: 4px;
+    }
+
+    /* ── CHAT AREA ────────────────────────────────── */
+    .chat-area {
+      flex: 1;
+      display: flex; flex-direction: column;
+      background: #e8eef4;
+      overflow: hidden;
+    }
+
+    /* Chat header */
+    .chat-header {
+      background: #fff;
+      padding: 14px 20px;
+      display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid #dde4ed;
+      flex-shrink: 0;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    }
+    .chat-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--mid);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: .9rem; color: #fff;
+    }
+    .chat-title { font-size: .95rem; font-weight: 700; color: #0d1b2a; }
+    .chat-sub   { font-size: .72rem; color: #7a8fa6; font-weight: 500; }
+    .btn-view-profile {
+      margin-left: auto;
+      background: var(--blue);
+      color: #fff; border: none;
+      border-radius: 8px; padding: 7px 16px;
+      font-size: .78rem; font-weight: 600;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-view-profile:hover { background: var(--bright); }
+    .chat-more { color: #7a8fa6; font-size: 1.2rem; cursor: pointer; margin-left: 12px; }
+
+    /* Messages */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .messages::-webkit-scrollbar { width: 5px; }
+    .messages::-webkit-scrollbar-thumb { background: rgba(0,0,0,.12); border-radius: 4px; }
+
+    .bubble-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .bubble-row.me { flex-direction: row-reverse; }
+
+    .bubble {
+      max-width: 55%;
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: .83rem;
+      line-height: 1.55;
+      position: relative;
+    }
+    /* Received */
+    .bubble.them {
+      background: var(--mid);
+      color: #e8f0fe;
+      border-bottom-left-radius: 4px;
+    }
+    /* Sent */
+    .bubble.me {
+      background: var(--blue);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+    .bubble-time {
+      font-size: .65rem;
+      color: rgba(255,255,255,.55);
+      text-align: right;
+      margin-top: 6px;
+      display: flex; align-items: center; justify-content: flex-end; gap: 4px;
+    }
+    .bubble.them .bubble-time { color: rgba(200,220,255,.5); }
+    .check-icon { font-size: .7rem; color: #90caf9; }
+
+    /* Date divider */
+    .date-divider {
+      text-align: center;
+      font-size: .7rem;
+      color: #7a8fa6;
+      margin: 8px 0;
+      position: relative;
+    }
+    .date-divider::before,
+    .date-divider::after {
+      content: '';
+      display: inline-block;
+      width: 60px; height: 1px;
+      background: #c4d0dc;
+      vertical-align: middle;
+      margin: 0 8px;
+    }
+
+    /* ── INPUT BAR ────────────────────────────────── */
+    .input-bar {
+      background: #fff;
+      border-top: 1px solid #dde4ed;
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 12px;
+      flex-shrink: 0;
+    }
+    .input-bar i {
+      font-size: 1.25rem;
+      color: #7a8fa6; cursor: pointer;
+      transition: color .2s;
+    }
+    .input-bar i:hover { color: var(--blue); }
+    .msg-input {
+      flex: 1;
+      background: #f0f4f8;
+      border: 1px solid #dde4ed;
+      border-radius: 24px;
+      padding: 9px 18px;
+      font-family: inherit; font-size: .85rem;
+      outline: none; color: #0d1b2a;
+      transition: border-color .2s;
+    }
+    .msg-input:focus { border-color: var(--bright); }
+    .msg-input::placeholder { color: #aab8c8; }
+  </style>
+</head>
+<body>
+
+  <!-- ── TOP NAV ─────────────────────────────────── -->
+  <header class="topbar">
+    <div class="brand">DormMate</div>
+    <nav class="d-none d-md-flex">
+      <a href="#">Explore</a>
+      <a href="#" class="active">Matches</a>
+      <a href="#">Messages</a>
+      <a href="#">Profile</a>
+    </nav>
+    <div class="topbar-icons">
+      <i class="bi bi-bell"></i>
+      <i class="bi bi-gear"></i>
+      <div class="avatar-sm">JD</div>
+    </div>
+  </header>
+
+  <!-- ── APP BODY ────────────────────────────────── -->
+  <div class="app-body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <span class="sidebar-label">Group Chat</span>
+        <i class="bi bi-pencil" style="color:rgba(255,255,255,.45);cursor:pointer;font-size:.9rem;"></i>
+      </div>
+
+      <div class="search-wrap">
+        <div class="search-box">
+          <i class="bi bi-search" style="font-size:.85rem;"></i>
+          <input type="text" placeholder="Search" />
+        </div>
+      </div>
+
+      <div class="conv-list">
+        <!-- Active conversation -->
+        <div class="conv-item active">
+          <div class="conv-avatar" style="background:#1565c0;">
+            GN<div class="dot"></div>
+          </div>
+          <div class="conv-info">
+            <div class="conv-name">Group Name</div>
+            <div class="conv-preview">See you later, I'll let you know</div>
+          </div>
+          <div class="conv-meta">
+            <div class="conv-time">6:08</div>
+            <div class="badge-count">3</div>
+          </div>
+        </div>
+
+        <!-- Other conversations (repeated) -->
+        <script>
+          const names = [
+            ["AS","Alice & Sam","See you later, I'll let you know","5:14","2"],
+            ["RK","Riley's Dorm","See you later, I'll let you know","5:14",""],
+            ["TG","The Gang 🏠","See you later, I'll let you know","5:14","1"],
+            ["MJ","Mike + Jordan","See you later, I'll let you know","4:50",""],
+            ["CS","Campus Squad","See you later, I'll let you know","4:22","4"],
+            ["BF","Best Friends","See you later, I'll let you know","3:10",""],
+            ["NR","North Res","See you later, I'll let you know","2:55","2"],
+            ["DH","Dorm Hall A","See you later, I'll let you know","1:30",""],
+            ["HM","Homeroom","See you later, I'll let you know","12:10",""],
+          ];
+          const colors = ["#0d47a1","#1565c0","#1976d2","#1e88e5","#0d47a1","#1565c0","#1976d2","#1e88e5","#0d47a1"];
+          document.addEventListener("DOMContentLoaded", () => {
+            const list = document.querySelector(".conv-list");
+            names.forEach(([init,name,preview,time,badge], i) => {
+              list.innerHTML += `
+                <div class="conv-item">
+                  <div class="conv-avatar" style="background:${colors[i]};">${init}</div>
+                  <div class="conv-info">
+                    <div class="conv-name">${name}</div>
+                    <div class="conv-preview">${preview}</div>
+                  </div>
+                  <div class="conv-meta">
+                    <div class="conv-time">${time}</div>
+                    ${badge ? `<div class="badge-count">${badge}</div>` : ''}
+                  </div>
+                </div>`;
+            });
+          });
+        </script>
+      </div>
+    </aside>
+
+    <!-- CHAT AREA -->
+    <main class="chat-area">
+
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-avatar">GN</div>
+        <div>
+          <div class="chat-title">GROUP NAME</div>
+          <div class="chat-sub">PREFERENCES</div>
+        </div>
+        <button class="btn-view-profile">View Profile</button>
+        <i class="bi bi-three-dots-vertical chat-more"></i>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages">
+        <div class="date-divider">Today</div>
+
+        <!-- Received -->
+        <div class="bubble-row them">
+          <div class="bubble them">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            <div class="bubble-time">09:20</div>
+          </div>
+        </div>
+
+        <!-- Sent -->
+        <div class="bubble-row me">
+          <div class="bubble me">
+            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            <div class="bubble-time">09:20 <i class="bi bi-check2-all check-icon"></i></div>
+          </div>
+        </div>
+
+        <!-- Received long -->
+        <div class="bubble-row them">
+          <div class="bubble them">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="bubble-time">09:20</div>
+          </div>
+        </div>
+
+        <!-- Sent long -->
+        <div class="bubble-row me">
+          <div class="bubble me">
+            Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            <div class="bubble-time">09:20 <i class="bi bi-check2-all check-icon"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="input-bar">
+        <i class="bi bi-paperclip"></i>
+        <input class="msg-input" type="text" placeholder="Message" />
+        <i class="bi bi-emoji-smile"></i>
+        <i class="bi bi-camera-video"></i>
+        <i class="bi bi-mic"></i>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Bootstrap 5 JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Send message interaction -->
+  <script>
+    // Read room name from URL e.g. index.html?room=Study+Buddies
+    const params = new URLSearchParams(window.location.search);
+    const roomName = params.get('room') || 'Group Name';
+    document.querySelector('.chat-title').textContent = roomName.toUpperCase();
+
+    // Also update sidebar active item label
+    document.querySelector('.conv-item.active .conv-name').textContent = roomName;
+  
+    const input = document.querySelector('.msg-input');
+    const messages = document.querySelector('.messages');
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && input.value.trim()) {
+        const row = document.createElement('div');
+        row.className = 'bubble-row me';
+        row.innerHTML = `
+          <div class="bubble me">
+            ${input.value.trim()}
+            <div class="bubble-time">${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} <i class="bi bi-check2-all check-icon"></i></div>
+          </div>`;
+        messages.appendChild(row);
+        input.value = '';
+        messages.scrollTop = messages.scrollHeight;
+      }
+    });
+  </script>
+
+</body>
+</html>
