@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DormMate – Group Chat Categories</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --navy:   #0d1b2a;
+      --dark:   #1a2a3a;
+      --mid:    #1e3a5f;
+      --blue:   #1565c0;
+      --accent: #1976d2;
+      --bright: #2196f3;
+      --topbar-h: 64px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #4a6fa5;
+      min-height: 100vh;
+    }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      z-index: 100;
+      box-shadow: 0 2px 16px rgba(0,0,0,.4);
+    }
+    .topbar .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.5px;
+    }
+    .topbar nav { margin-left: 48px; }
+    .topbar nav a {
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      font-size: .875rem;
+      font-weight: 500;
+      padding: 0 14px;
+      transition: color .2s;
+    }
+    .topbar nav a.active,
+    .topbar nav a:hover { color: #fff; }
+    .topbar nav a.active {
+      border-bottom: 2px solid var(--bright);
+      padding-bottom: 2px;
+    }
+    .topbar-icons {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .topbar-icons i { font-size: 1.2rem; color: rgba(255,255,255,.7); cursor: pointer; }
+    .topbar-icons i:hover { color: #fff; }
+    .avatar-sm {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: .85rem; color: #fff; cursor: pointer;
+    }
+
+    /* ── PAGE BODY ── */
+    .page-body {
+      padding-top: calc(var(--topbar-h) + 32px);
+      padding-bottom: 48px;
+      padding-left: 32px;
+      padding-right: 32px;
+    }
+
+    /* Page title */
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 28px;
+      text-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    /* ── CATEGORY CARD ── */
+    .cat-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,.18);
+      cursor: pointer;
+      transition: transform .22s ease, box-shadow .22s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .cat-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: 0 12px 32px rgba(0,0,0,.28);
+    }
+    .cat-card:active { transform: scale(.98); }
+
+    /* Photo area */
+    .cat-img-wrap {
+      width: 100%;
+      aspect-ratio: 3/3.4;
+      overflow: hidden;
+      position: relative;
+      background: #c8d6e5;
+    }
+    .cat-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .35s ease;
+    }
+    .cat-card:hover .cat-img-wrap img {
+      transform: scale(1.06);
+    }
+
+    /* Hover overlay */
+    .cat-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(13,27,42,.65) 100%);
+      opacity: 0;
+      transition: opacity .25s;
+      display: flex; align-items: flex-end; justify-content: center;
+      padding-bottom: 14px;
+    }
+    .cat-card:hover .cat-overlay { opacity: 1; }
+    .cat-overlay span {
+      color: #fff; font-size: .78rem; font-weight: 600;
+      letter-spacing: .5px;
+    }
+
+    /* Card body */
+    .cat-body {
+      padding: 12px 14px 14px;
+      flex: 1;
+    }
+    .cat-name {
+      font-size: .82rem;
+      font-weight: 700;
+      color: #0d1b2a;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--blue);
+      color: #fff;
+      font-size: .68rem;
+      font-weight: 600;
+      border-radius: 20px;
+      padding: 3px 10px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+    .cat-badge i { font-size: .7rem; }
+
+    /* Members count pill (second row cards) */
+    .cat-members {
+      font-size: .7rem;
+      color: #7a8fa6;
+      margin-top: 4px;
+    }
+    .cat-members i { font-size: .65rem; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <header class="topbar">
+    <div class="brand">DormMate</div>
+    <nav class="d-none d-md-flex">
+      <a href="#">Explore</a>
+      <a href="#" class="active">Matches</a>
+      <a href="#">Messages</a>
+      <a href="#">Profile</a>
+    </nav>
+    <div class="topbar-icons">
+      <i class="bi bi-bell"></i>
+      <i class="bi bi-gear"></i>
+      <div class="avatar-sm">JD</div>
+    </div>
+  </header>
+
+  <!-- PAGE BODY -->
+  <div class="page-body">
+    <div class="page-title">GROUP<br>CHAT</div>
+
+    <!-- Category Grid -->
+    <div class="row g-4" id="categoryGrid">
+
+      <!-- Card 1 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="cat-card" onclick="joinChat('Study Buddies')">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&q=80" alt="Study Buddies"/>
+            <div class="cat-overlay"><span><i class="bi bi-arrow-right-circle me-1"></i>Join Chat</span></div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-name">Study Buddies</div>
+            <div class="cat-badge"><i class="bi bi-bookmark-fill"></i> Academic</div>
+            <div class="cat-members mt-1"><i class="bi bi-people-fill me-1"></i>124 members</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="cat-card" onclick="joinChat('Night Owls')">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400&q=80" alt="Night Owls"/>
+            <div class="cat-overlay"><span><i class="bi bi-arrow-right-circle me-1"></i>Join Chat</span></div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-name">Night Owls</div>
+            <div class="cat-badge"><i class="bi bi-bookmark-fill"></i> Lifestyle</div>
+            <div class="cat-members mt-1"><i class="bi bi-people-fill me-1"></i>89 members</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="cat-card" onclick="joinChat('Fitness Crew')">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80" alt="Fitness Crew"/>
+            <div class="cat-overlay"><span><i class="bi bi-arrow-right-circle me-1"></i>Join Chat</span></div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-name">Fitness Crew</div>
+            <div class="cat-badge"><i class="bi bi-bookmark-fill"></i> Health</div>
+            <div class="cat-members mt-1"><i class="bi bi-people-fill me-1"></i>67 members</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="cat-card" onclick="joinChat('Music Heads')">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&q=80" alt="Music Heads"/>
+            <div class="cat-overlay"><span><i class="bi bi-arrow-right-circle me-1"></i>Join Chat</span></div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-name">Music Heads</div>
+            <div class="cat-badge"><i class="bi bi-bookmark-fill"></i> Hobbies</div>
+            <div class="cat-members mt-1"><i class="bi bi-people-fill me-1"></i>203 members</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="cat-card" onclick="joinChat('Foodies')">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=80" alt="Foodies"/>
+            <div class="cat-overlay"><span><i class="bi bi-arrow-right-circle me-1"></i>Join Chat</span></div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-name">Foodies</div>
+            <div class="cat-badge"><i class="bi bi-bookmark-fill"></i> Food</div>
+            <div class="cat-members mt-1"><i class="bi bi-people-fill me-1"></i>158 members</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="cat-card" onclick="joinChat('Gamers Hub')">
+          <div class="cat-img-wrap">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80" alt="Gamers Hub"/>
+            <div class="cat-overlay"><span><i class="bi bi-arrow-right-circle me-1"></i>Join Chat</span></div>
+          </div>
+          <div class="cat-body">
+            <div class="cat-name">Gamers Hub</div>
+            <div class="cat-badge"><i class="bi bi-bookmark-fill"></i> Gaming</div>
+            <div class="cat-members mt-1"><i class="bi bi-people-fill me-1"></i>312 members</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /row -->
+  </div><!-- /page-body -->
+
+  <!-- Toast notification -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+    <div id="joinToast" class="toast align-items-center text-bg-primary border-0" role="alert">
+      <div class="d-flex">
+        <div class="toast-body" id="toastMsg">Joining chat...</div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function joinChat(categoryName) {
+      // Show toast
+      document.getElementById('toastMsg').textContent = `Joining "${categoryName}" chat room...`;
+      const toastEl = document.getElementById('joinToast');
+      const toast = new bootstrap.Toast(toastEl, { delay: 1800 });
+      toast.show();
+
+      // Redirect to chatbox after short delay, passing category name
+      setTimeout(() => {
+        window.location.href = `index.html?room=${encodeURIComponent(categoryName)}`;
+      }, 1800);
+    }
+  </script>
+</body>
+</html>
