@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+        <link rel="stylesheet" href="styles.css">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE-edge">
+        <title> DormMate </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    
+    </head>
+        <header>
+            <a href="welcome-page.html"><h2> DormMate </h2></a>
+            <nav>
+                <ul class="nav_links">
+                    <li><a href="#"> Subscriptions </a></li>
+                    <li><a href="#"> Learn </a></li>
+                    <li><a href="#"> Download </a></li>
+                </ul>
+            </nav>
+            <a class="cta" href="signin.html"><button> Log In </button></a>
+        </header>
+    <body>
+        <div class="form-container">
+        <h1 class="title">Let's talk about lifestyle!</h1>
+        
+        <form>
+            <div class="input-group">
+                <label>What nickname do you prefer?</label>
+                <input type="text" name="nickname">
+            </div>
+
+            <div class="input-group">
+                <label>Where is your dorm located?</label>
+                <input type="text" name="location">
+            </div>
+
+            <div class="input-group">
+                <label>What is your estimated budget?</label>
+                <input type="text" name="budget" class="short-input">
+            </div>
+
+            <div class="gender-section">
+                <label>Any gender preference?</label>
+                <div class="radio-group">
+                    <label class="radio-card">
+                        <input type="radio" name="gender" value="male">
+                        <div class="card-content">
+                            <span class="icon">♂</span> Male
+                        </div>
+                    </label>
+                    
+                    <label class="radio-card">
+                        <input type="radio" name="gender" value="female">
+                        <div class="card-content">
+                            <span class="icon">♀</span> Female
+                        </div>
+                    </label>
+
+                    <label class="radio-card">
+                        <input type="radio" name="gender" value="any">
+                        <div class="card-content">
+                            <span class="icon">⚥</span> Any
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="next-btn">Next</button>
+        </form>
+    </div>
+    </body>
+</html>
