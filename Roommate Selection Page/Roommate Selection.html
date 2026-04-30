@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DormMate</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Fredoka+One&display=swap" rel="stylesheet">
+
+<style>
+body{
+margin:0;
+font-family:'Fredoka',sans-serif;
+background:linear-gradient(to bottom,#2D4156,#638EBC);
+}
+
+.navbar{
+height:75px;
+background:#0C0E1266;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.navbar-brand{
+font-family:'Fredoka One',cursive;
+font-size:42px;
+color:#e6f0f7 !important;
+}
+
+.center-menu{
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+}
+
+.nav-link{
+color:#e6f0f7 !important;
+margin:0 15px;
+padding-bottom:5px;
+border-bottom:2px solid transparent;
+transition:.2s ease;
+}
+
+.nav-link:hover{
+border-bottom:2px solid #9fc7ee;
+}
+
+.right-side{
+display:flex;
+align-items:center;
+gap:18px;
+}
+
+.icon-btn{
+font-size:20px;
+color:#e6f0f7;
+cursor:pointer;
+transition:.2s ease;
+}
+
+.icon-btn:hover{
+transform:scale(1.15);
+color:#9fc7ee;
+}
+
+.profile-img{
+width:40px;
+height:40px;
+border-radius:50%;
+object-fit:cover;
+cursor:pointer;
+transition:.2s;
+}
+
+.profile-img:hover{
+transform:scale(1.05);
+border:2px solid #9fc7ee;
+}
+
+.main{
+display:flex;
+height:calc(100vh - 75px);
+}
+
+.sidebar{
+width:260px;
+padding:20px;
+background:rgba(0,0,0,.1);
+}
+
+.search-box{
+background:rgba(255,255,255,.2);
+padding:8px 14px;
+border-radius:20px;
+display:flex;
+align-items:center;
+gap:10px;
+margin-bottom:20px;
+color:white;
+font-weight:600;
+}
+
+.side-item{
+display:flex;
+align-items:center;
+gap:12px;
+color:#e6f0f7;
+margin:18px 0;
+cursor:pointer;
+transition:.2s;
+}
+
+.side-item:hover{
+color:#9fc7ee;
+transform:translateX(5px);
+}
+
+.content{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+padding-right:80px;
+}
+
+.profile-card{
+width:350px;
+height:520px;
+border-radius:18px;
+overflow:hidden;
+position:relative;
+box-shadow:0 30px 50px rgba(0,0,0,.55);
+transition:transform .5s cubic-bezier(0.2, 0.8, 0.2, 1);
+animation:fadeUp .6s ease;
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(40px);}
+to{opacity:1; transform:translateY(0);}
+}
+
+.profile-card img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.dim img{
+filter:brightness(40%);
+}
+
+.overlay{
+position:absolute;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%) scale(0.5);
+font-size:70px;
+opacity:0;
+transition:.3s;
+}
+
+.like{
+color:#638EBC;
+text-shadow:0 0 10px rgba(99,142,188,0.6);
+}
+
+.dislike{
+color:transparent;
+background:linear-gradient(90deg,#930026,#7000A1);
+-webkit-background-clip:text;
+background-clip:text;
+text-shadow:0 0 10px rgba(147,0,38,0.4);
+}
+
+.info-box{
+position:absolute;
+bottom:12px;
+left:12px;
+right:12px;
+background:rgba(0,0,0,.7);
+border-radius:12px;
+padding:15px;
+color:white;
+}
+
+#nameAge{
+margin-bottom:4px;
+font-size:26px;
+font-weight:600;
+}
+
+.tag{
+display:inline-block;
+margin-top:2px;
+font-size:10px;
+padding:4px 14px;
+border-radius:20px;
+font-weight:600;
+background:linear-gradient(90deg,#117292 8%,rgba(73,161,190,0.4) 100%, #12B0E5 100%);
+border:1px solid rgba(73,161,190,0.4);
+}
+
+.card-buttons{
+display:flex;
+justify-content:space-between;
+margin-top:12px;
+}
+
+.card-buttons > div{
+flex:1;
+display:flex;
+justify-content:center;
+}
+
+.btn-circle{
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+cursor:pointer;
+transition:.2s;
+}
+
+.small-btn{width:40px;height:40px;font-size:16px;}
+.big-btn{width:52px;height:52px;font-size:22px;}
+
+.btn-like{background:#638EBC;}
+.btn-dislike{background:linear-gradient(90deg,#930026,#7000A1);}
+.btn-fav{background:#004D67;}
+.btn-undo{background:rgba(255,255,255,0.2);}
+
+.btn-circle:hover{
+transform:scale(1.15) translateY(-3px);
+}
+
+#matchPopup{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:rgba(12,14,18,0.95);
+padding:28px;
+border-radius:18px;
+color:#e6f0f7;
+display:none;
+z-index:9999;
+text-align:center;
+box-shadow:0 25px 60px rgba(0,0,0,.6);
+backdrop-filter:blur(10px);
+min-width:260px;
+}
+
+</style>
+</head>
+
+<body>
+
+<nav class="navbar px-4">
+<a class="navbar-brand">DormMate</a>
+
+<div class="center-menu">
+<ul class="navbar-nav flex-row">
+<li><a class="nav-link active">Explore</a></li>
+<li><a class="nav-link">Matches</a></li>
+<li><a class="nav-link">Messages</a></li>
+<li><a class="nav-link">Profile</a></li>
+</ul>
+</div>
+
+<div class="ms-auto right-side">
+<i class="bi bi-bell icon-btn"></i>
+<i class="bi bi-gear icon-btn"></i>
+<img src="Maddy.jpeg" class="profile-img">
+</div>
+</nav>
+
+<div class="main">
+
+<div class="sidebar">
+<div class="search-box">
+<i class="bi bi-search"></i> Browse Roommates
+</div>
+
+<div class="side-item"><i class="bi bi-heart"></i>My Matches</div>
+<div class="side-item"><i class="bi bi-chat"></i>Messages</div>
+<div class="side-item"><i class="bi bi-bookmark"></i>Saved Profiles</div>
+<div class="side-item"><i class="bi bi-gear"></i>Settings</div>
+</div>
+
+<div class="content">
+
+<div class="profile-card" id="card">
+
+<img src="Alden.jpg">
+
+<div class="overlay like" id="likeIcon">
+<i class="bi bi-hand-thumbs-up-fill"></i>
+</div>
+
+<div class="overlay dislike" id="dislikeIcon">
+<i class="bi bi-hand-thumbs-down-fill"></i>
+</div>
+
+<div class="info-box">
+<h4 id="nameAge">ONIN, 20</h4>
+<div class="tag">STUDENT</div>
+
+<p id="desc" style="font-size:12px;margin-top:8px;">
+Near Ateneo De Naga University <br>
+Quiet, organized student
+</p>
+
+<div class="card-buttons">
+
+<div><div class="btn-circle btn-undo small-btn" onclick="undo()"><i class="bi bi-arrow-counterclockwise"></i></div></div>
+<div><div class="btn-circle btn-like big-btn" onclick="like()"><i class="bi bi-hand-thumbs-up-fill"></i></div></div>
+<div><div class="btn-circle btn-dislike big-btn" onclick="dislike()"><i class="bi bi-hand-thumbs-down-fill"></i></div></div>
+<div><div class="btn-circle btn-fav small-btn" onclick="favorite()"><i class="bi bi-star-fill"></i></div></div>
+
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<div id="matchPopup">
+<h2 style="margin-bottom:8px;">
+It’s a Match!
+</h2>
+
+<p id="matchText" style="font-size:14px;opacity:0.85;"></p>
+
+<div style="margin-top:18px;display:flex;gap:10px;justify-content:center;">
+<button onclick="openChat()" style="padding:8px 12px;border:none;border-radius:10px;background:#638EBC;color:white;">Chat</button>
+<button onclick="maybeLater()" style="padding:8px 12px;border:none;border-radius:10px;background:#444;color:white;">Maybe Later</button>
+<button onclick="closeMatch()" style="padding:8px 12px;border:none;border-radius:10px;background:#930026;color:white;">No</button>
+</div>
+</div>
+
+<script>
+
+const card = document.getElementById("card");
+const likeIcon = document.getElementById("likeIcon");
+const dislikeIcon = document.getElementById("dislikeIcon");
+const matchPopup = document.getElementById("matchPopup");
+const matchText = document.getElementById("matchText");
+
+const profiles = [
+{img:"Alden.jpg",name:"ONIN",age:20,desc:"Near Ateneo De Naga University <br> Quiet, Organized, quiet environment"},
+{img:"Jisoo.jpg",name:"TRIXIE",age:20,desc:"Near Ateneo De Naga University <br> Friendly, outgoing"},
+{img:"Maddy3.jpg",name:"KEN",age:18,desc:"Near University of Nueva Caceres <br> Night owl, loves studying"},
+{img:"Maddy2.jpg",name:"ASH",age:21,desc:"Near Universidad de Sta.Isabel <br> Introvert, peaceful dorm"},
+{img:"Benjamin.jpg",name:"BENJ",age:19,desc:"Near Naga College Foundation <br> Introvert, peaceful dorm"}
+];
+
+let currentIndex = 0;
+let historyStack = [];
+let currentMatch = null;
+
+function updateProfile(){
+const p = profiles[currentIndex];
+card.querySelector("img").src = p.img;
+nameAge.innerHTML = p.name + ", " + p.age;
+desc.innerHTML = p.desc;
+}
+
+function nextProfile(){
+historyStack.push(currentIndex);
+currentIndex = (currentIndex + 1) % profiles.length;
+updateProfile();
+}
+
+function like(){
+
+const p = profiles[currentIndex];
+
+if(Math.random() > 0.5){
+currentMatch = p;
+matchPopup.style.display = "block";
+matchText.innerText = "You matched with " + p.name;
+}
+
+card.classList.add("dim");
+likeIcon.style.opacity="1";
+card.style.transform="translateX(300px) rotate(12deg)";
+setTimeout(()=>{reset();nextProfile();},600);
+}
+
+function dislike(){
+card.classList.add("dim");
+dislikeIcon.style.opacity="1";
+card.style.transform="translateX(-300px) rotate(-12deg)";
+setTimeout(()=>{reset();nextProfile();},600);
+}
+
+function favorite(){
+card.classList.add("dim");
+card.style.transform="translateY(-300px) scale(1.1)";
+setTimeout(()=>{reset();nextProfile();},600);
+}
+
+function undo(){
+if(historyStack.length===0)return;
+currentIndex=historyStack.pop();
+updateProfile();
+}
+
+function reset(){
+card.classList.remove("dim");
+likeIcon.style.opacity="0";
+dislikeIcon.style.opacity="0";
+card.style.transform="translateX(0) translateY(0) rotate(0) scale(1)";
+}
+
+function openChat(){
+matchPopup.style.display="none";
+alert("Open chat for " + currentMatch.name);
+}
+
+function maybeLater(){
+matchPopup.style.display="none";
+}
+
+function closeMatch(){
+matchPopup.style.display="none";
+}
+
+</script>
+
+</body>
+</html>
